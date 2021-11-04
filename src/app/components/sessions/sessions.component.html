@@ -1,0 +1,32 @@
+<div class="container">
+  <div>
+    <h2>Usuarios</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Usuarios</mat-label>
+      <mat-select (selectionChange)="selectUser($event.value._id)">
+        <mat-option *ngFor="let user of users" [value]="user"> {{ user.name }} {{ user.last_name }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" *ngIf="user">
+      <mat-label>Seleccione una fecha</mat-label>
+      <input matInput [matDatepicker]="picker" [formControl]="date" (dateChange)="changeDate($event)" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="user-list">
+    <table mat-table [dataSource]="sessions">
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>Accion</th>
+        <td mat-cell *matCellDef="let session">{{ session.action }}</td>
+      </ng-container>
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let session">{{ session.created_at | date: 'dd-MM-yyyy HH:mm a' }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</div>
