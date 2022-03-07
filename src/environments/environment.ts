@@ -4,5 +4,5 @@
 
 export const environment = {
   production: false,
-  URL_BASE: 'http://localhost:3001/api/',
+  URL_BASE: 'https://credicash-backend.herokuapp.com/api/',
 };

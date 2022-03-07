@@ -3,9 +3,6 @@ import { Service } from 'src/app/services/http.service';
 import { Users } from './users';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError } from 'rxjs/operators';
-// import { HttpErrorResponse } from '@angular/common/http';
-// import { EMPTY } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -34,9 +31,14 @@ export class UsersComponent implements OnInit {
     await this.getUsers();
   }
 
-  async getUsers(): Promise<void> {
-    (await this.service.apiRest('', 'users/get_users')).subscribe(({ result }) => {
-      return (this.users = result);
+  async getUsers(): Promise<Users[] | void> {
+    (await this.service.apiRest('', 'user/get_users')).subscribe({
+      next: ({ result }) => {
+        return (this.users = result);
+      },
+      error: () => {
+        return [];
+      },
     });
   }
 
@@ -51,7 +53,7 @@ export class UsersComponent implements OnInit {
       icon: 'question',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        (await this.service.apiRest(JSON.stringify({ phone }), 'users/delete_user')).subscribe(async () => {
+        (await this.service.apiRest(JSON.stringify({ phone }), 'user/delete_user')).subscribe(async () => {
           await this.getUsers();
           Swal.fire('Usuario eliminado!', '', 'success');
         });
@@ -66,17 +68,16 @@ export class UsersComponent implements OnInit {
     const nickname = this.form.get('nickname')?.value;
 
     if (this.form.valid) {
-      (await this.service.apiRest(JSON.stringify({ name, last_name, phone, nickname }), 'users/create_user'))
-        .pipe(
-          catchError(async () => {
-            return this._openSnackBar('El usuario no se puede crear porque se ya existe!', 'Aceptar');
-          })
-        )
-        .subscribe(async (result) => {
+      (await this.service.apiRest(JSON.stringify({ name, last_name, phone, nickname }), 'user/create_user')).subscribe({
+        complete: async () => {
           this._resetForm();
           await this.getUsers();
           this._openSnackBar('El usuario se creo con exito!', 'Aceptar');
-        });
+        },
+        error: () => {
+          return this._openSnackBar('El usuario no se puede crear porque se ya existe!', 'Aceptar');
+        },
+      });
     }
   }
 

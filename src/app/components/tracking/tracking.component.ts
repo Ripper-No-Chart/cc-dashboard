@@ -27,9 +27,14 @@ export class TrackingComponent implements OnInit {
     window.open('https://www.google.com.ar/maps/place/' + latitude + longitude, '_blank');
   }
 
-  async getUsers(): Promise<void> {
-    (await this.service.apiRest('', 'users/get_users')).subscribe(({ result }) => {
-      return (this.users = result);
+  async getUsers(): Promise<Users[] | void> {
+    (await this.service.apiRest('', 'user/get_users')).subscribe({
+      next: ({ result }) => {
+        return (this.users = result);
+      },
+      error: () => {
+        return [];
+      },
     });
   }
 

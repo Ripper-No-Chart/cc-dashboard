@@ -1,6 +1,8 @@
 export interface Users extends Array<Users> {
-  name: string;
-  last_name: string;
-  phone: number;
-  nickname: string;
+  primary_data: {
+    name: string;
+    last_name: string;
+    phone: number;
+    nickname: string;
+  };
 }

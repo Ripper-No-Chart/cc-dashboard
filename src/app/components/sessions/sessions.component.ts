@@ -25,9 +25,14 @@ export class SessionsComponent implements OnInit {
     await this.getUsers();
   }
 
-  async getUsers(): Promise<void> {
-    (await this.service.apiRest('', 'users/get_users')).subscribe(({ result }) => {
-      return (this.users = result);
+  async getUsers(): Promise<Users[] | void> {
+    (await this.service.apiRest('', 'user/get_users')).subscribe({
+      next: ({ result }) => {
+        return (this.users = result);
+      },
+      error: () => {
+        return [];
+      },
     });
   }
 
@@ -44,10 +49,8 @@ export class SessionsComponent implements OnInit {
   // On change date, get all sessions of this user on current date
   async changeDate(event: MatDatepickerInputEvent<Date>): Promise<void> {
     const date = event.value?.getTime(); // Epoch time
-    (await this.service.apiRest(JSON.stringify({ date, user: this.user }), 'sessions/get')).subscribe(
-      ({ sessions }) => {
-        this.sessions = sessions;
-      }
-    );
+    (await this.service.apiRest(JSON.stringify({ date, user: this.user }), 'session/get')).subscribe(({ sessions }) => {
+      this.sessions = sessions;
+    });
   }
 }
